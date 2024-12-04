@@ -76,6 +76,7 @@ function updateBall() {
     level = 1;  // Reset level kembali ke 1
     paddleWidth = 10;
     paddleHeight = 100;
+    score = 0;  // Reset skor
   }
 }
 
@@ -163,12 +164,4 @@ canvas.addEventListener('touchmove', (e) => {
   // Menggerakkan paddle berdasarkan sentuhan
   if (touchDeltaY < 0 && paddleY > 0) {
     paddleY -= paddleSpeed; // Geser paddle ke atas
-  } else if (touchDeltaY > 0 && paddleY + paddleHeight < canvas.height) {
-    paddleY += paddleSpeed; // Geser paddle ke bawah
-  }
-
-  touchStartY = touchMoveY;  // Memperbarui posisi sentuhan untuk pergerakan selanjutnya
-});
-
-// Mulai permainan
-draw();
+  } else if (touchDeltaY > 0 && paddleY + paddleHeight < canvas.height
