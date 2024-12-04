@@ -1,38 +1,51 @@
-const gameArea = document.getElementById('gameArea');
-const paddle = document.getElementById('paddle');
 const ball = document.getElementById('ball');
+const paddle = document.getElementById('paddle');
+const gameArea = document.getElementById('gameArea');
 const startButton = document.getElementById('startButton');
 
-let paddleY = 160; // Posisi awal paddle
-let ballX = 392; // Posisi awal bola
-let ballY = 192; // Posisi awal bola
-let ballSpeedX = 4; // Kecepatan bola di sumbu X
-let ballSpeedY = 2; // Kecepatan bola di sumbu Y
-let gameRunning = false; // Status permainan
+let ballDirectionX = 2; // Kecepatan bola di sumbu X
+let ballDirectionY = 2; // Kecepatan bola di sumbu Y
+let paddleSpeed = 20; // Kecepatan paddle
+let paddlePosition = gameArea.offsetWidth / 2 - paddle.offsetWidth / 2; // Posisi awal paddle
+let gameInterval; // Variabel untuk menyimpan interval permainan
 
-// Fungsi untuk memulai permainan
-function startGame() {
-    gameRunning = true;
-    ballX = 392; // Reset posisi bola
-    ballY = 192; // Reset posisi bola
-    ballSpeedX = 4; // Reset kecepatan bola
-    ballSpeedY = 2; // Reset kecepatan bola
-    gameArea.style.display = 'block'; // Tampilkan area permainan
-    startButton.style.display = 'none'; // Sembunyikan tombol mulai
-    update(); // Mulai pembaruan
-}
+function moveBall() {
+    let ballRect = ball.getBoundingClientRect();
+    let paddleRect = paddle.getBoundingClientRect();
+    let gameAreaRect = gameArea.getBoundingClientRect();
 
-// Fungsi untuk memperbarui posisi bola dan paddle
-function update() {
-    if (!gameRunning) return; // Jika permainan tidak berjalan, keluar dari fungsi
+    // Gerakan bola
+    ball.style.left = (ball.offsetLeft + ballDirectionX) + 'px';
+    ball.style.top = (ball.offsetTop + ballDirectionY) + 'px';
 
-    // Update posisi bola
-    ballX += ballSpeedX;
-    ballY += ballSpeedY;
-
-    // Deteksi tabrakan dengan dinding atas dan bawah
-    if (ballY <= 0 || ballY >= 385) {
-        ballSpeedY = -ballSpeedY; // Balik arah bola
+    // Deteksi tabrakan dengan dinding
+    if (ball.offsetLeft <= 0 || ball.offsetLeft + ballRect.width >= gameAreaRect.width) {
+        ballDirectionX = -ballDirectionX; // Balik arah
+    }
+    if (ball.offsetTop <= 0) {
+        ballDirectionY = -ballDirectionY; // Balik arah
     }
 
-   
+    // Deteksi tabrakan dengan paddle
+    if (ball.offsetTop + ballRect.height >= paddleRect.top && 
+        ball.offsetLeft + ballRect.width >= paddleRect.left && 
+        ball.offsetLeft <= paddleRect.right) {
+        ballDirectionY = -ballDirectionY; // Balik arah
+    }
+
+    // Jika bola jatuh di bawah
+    if (ball.offsetTop + ballRect.height >= gameAreaRect.height) {
+        alert("Game Over!");
+        clearInterval(gameInterval); // Hentikan permainan
+        ball.style.display = 'none'; // Sembunyikan bola
+        startButton.style.display = 'block'; // Tampilkan tombol mulai
+    }
+}
+
+function movePaddle(event) {
+    if (event.key === 'ArrowLeft' && paddlePosition > 0) {
+        paddlePosition -= paddleSpeed;
+    } else if (event.key === 'ArrowRight' && paddlePosition < (gameArea.offsetWidth - paddle.offsetWidth)) {
+        paddlePosition += paddleSpeed;
+    }
+    paddle.style.left = paddlePosition +
