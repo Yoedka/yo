@@ -10,7 +10,22 @@ let ballSpeedX = 4; // Kecepatan bola di sumbu X
 let ballSpeedY = 2; // Kecepatan bola di sumbu Y
 let gameRunning = false; // Status permainan
 
+// Fungsi untuk memulai permainan
+function startGame() {
+    gameRunning = true;
+    ballX = 392; // Reset posisi bola
+    ballY = 192; // Reset posisi bola
+    ballSpeedX = 4; // Reset kecepatan bola
+    ballSpeedY = 2; // Reset kecepatan bola
+    gameArea.style.display = 'block'; // Tampilkan area permainan
+    startButton.style.display = 'none'; // Sembunyikan tombol mulai
+    update(); // Mulai pembaruan
+}
+
+// Fungsi untuk memperbarui posisi bola dan paddle
 function update() {
+    if (!gameRunning) return; // Jika permainan tidak berjalan, keluar dari fungsi
+
     // Update posisi bola
     ballX += ballSpeedX;
     ballY += ballSpeedY;
@@ -20,23 +35,4 @@ function update() {
         ballSpeedY = -ballSpeedY; // Balik arah bola
     }
 
-    // Deteksi tabrakan dengan paddle
-    if (ballX <= 10 && ballY >= paddleY && ballY <= paddleY + 80) {
-        ballSpeedX = -ballSpeedX; // Balik arah bola
-    }
-
-    // Update posisi bola di layar
-    ball.style.left = ballX + 'px';
-    ball.style.top = ballY + 'px';
-
-    // Jika bola keluar dari area permainan
-    if (ballX < 0 || ballX > 800) {
-        resetGame();
-    }
-}
-
-function resetGame() {
-    ballX = 392; // Reset posisi bola
-    ballY = 192; // Reset posisi bola
-    ballSpeedX = 4; // Reset kecepatan bola
    
