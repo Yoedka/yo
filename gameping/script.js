@@ -51,22 +51,29 @@ function update() {
     requestAnimationFrame(update);
 }
 
-// Kontrol paddle
-document.addEventListener('keydown', (event) => {
-    if (!gameRunning) return; // Jika permainan belum dimulai, tidak ada kontrol
+// Fungsi untuk memulai permainan
+function startGame() {
+    gameArea.style.display = 'block'; // Tampilkan area permainan
+    startButton.style.display = 'none'; // Sembunyikan tombol mulai
+    gameRunning = true; // Set status permainan menjadi berjalan
+    update(); // Mulai pembaruan permainan
+}
 
-    if (event.key === 'ArrowUp' && paddleRightY > 0) {
-        paddleRightY -= 20; // Gerakkan paddle kanan ke atas
-    } else if (event.key === 'ArrowDown' && paddleRightY < 320) {
-        paddleRightY += 20; // Gerakkan paddle kanan ke bawah
+// Event listener untuk tombol mulai
+startButton.addEventListener('click', startGame);
+
+// Kontrol paddle dengan sentuhan
+gameArea.addEventListener('touchmove', (event) => {
+    const touchY = event.touches[0].clientY - gameArea.getBoundingClientRect().top;
+
+    // Pindahkan paddle kiri atau kanan berdasarkan posisi sentuh
+    if (touchY < gameArea.clientHeight / 2) {
+        paddleLeftY = touchY - 40; // Pusatkan paddle kiri pada sentuhan
+    } else {
+        paddleRightY = touchY - 40; // Pusatkan paddle kanan pada sentuhan
     }
 
-    if (event.key === 'w' && paddleLeftY > 0) {
-        paddleLeftY -= 20; // Gerakkan paddle kiri ke atas
-    } else if (event.key === 's' && paddleLeftY < 320) {
-        paddleLeftY += 20; // Gerakkan paddle kiri ke bawah
-    }
+    // Pastikan paddle tetap dalam batas
+    paddleLeftY = Math.max(0, Math.min(gameArea.clientHeight - 80, paddleLeftY));
+    paddleRightY = Math.max(0, Math.min(gameArea.clientHeight - 80, paddleRightY));
 });
-
-// Mulai permainan
-startButton.addEventListener
