@@ -53,10 +53,4 @@ function update() {
 document.addEventListener('keydown', (event) => {
     if (event.key === 'ArrowUp' && paddleRightY > 0) {
         paddleRightY -= 20; // Gerakkan paddle kanan ke atas
-    } else if (event.key === 'ArrowDown' && paddleRightY < 320) {
-        paddleRightY += 20; // Gerakkan paddle kanan ke bawah
-    }
-
-    if (event.key === 'w' && paddleLeftY > 0) {
-        paddleLeftY -= 20; // Gerakkan paddle kiri ke atas
-    } else if (event.key === 's' && paddle
+    } else if (event.key === 'ArrowDown'
