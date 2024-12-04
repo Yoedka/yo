@@ -7,6 +7,14 @@ body {
     margin: 0;
 }
 
+#startButton {
+    position: absolute;
+    top: 20px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
 #gameArea {
     position: relative;
     width: 800px;
