@@ -37,14 +37,8 @@ h1 {
     height: 80px;
     background-color: #61dafb;
     border-radius: 5px;
-}
-
-#paddleLeft {
-    left: 0;
-}
-
-#paddleRight {
-    right: 0;
+    left: 50%; /* Pindahkan paddle ke tengah */
+    transform: translateX(-50%); /* Sesuaikan posisi paddle */
 }
 
 #ball {
