@@ -5,19 +5,13 @@ body {
     height: 100vh;
     background-color: #000;
     margin: 0;
-}
-
-#startButton {
-    position: absolute;
-    top: 20px;
-    padding: 10px 20px;
-    font-size: 16px;
-    cursor: pointer;
+    flex-direction: column;
 }
 
 #gameArea {
     position: relative;
-    width: 800px;
+    width: 100%;
+    max-width: 800px;
     height: 400px;
     border: 2px solid #fff;
     overflow: hidden;
@@ -47,4 +41,12 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+}
+
+#startButton {
+    position: absolute;
+    top: 20px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
 }
