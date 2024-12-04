@@ -2,6 +2,7 @@ const gameArea = document.getElementById('gameArea');
 const paddleLeft = document.getElementById('paddleLeft');
 const paddleRight = document.getElementById('paddleRight');
 const ball = document.getElementById('ball');
+const startButton = document.getElementById('startButton');
 
 let paddleLeftY = 160; // Posisi awal paddle kiri
 let paddleRightY = 160; // Posisi awal paddle kanan
@@ -9,6 +10,7 @@ let ballX = 392; // Posisi awal bola
 let ballY = 192; // Posisi awal bola
 let ballSpeedX = 4; // Kecepatan bola di sumbu X
 let ballSpeedY = 2; // Kecepatan bola di sumbu Y
+let gameRunning = false; // Status permainan
 
 function update() {
     // Update posisi bola
@@ -51,6 +53,20 @@ function update() {
 
 // Kontrol paddle
 document.addEventListener('keydown', (event) => {
+    if (!gameRunning) return; // Jika permainan belum dimulai, tidak ada kontrol
+
     if (event.key === 'ArrowUp' && paddleRightY > 0) {
         paddleRightY -= 20; // Gerakkan paddle kanan ke atas
-    } else if (event.key === 'ArrowDown'
+    } else if (event.key === 'ArrowDown' && paddleRightY < 320) {
+        paddleRightY += 20; // Gerakkan paddle kanan ke bawah
+    }
+
+    if (event.key === 'w' && paddleLeftY > 0) {
+        paddleLeftY -= 20; // Gerakkan paddle kiri ke atas
+    } else if (event.key === 's' && paddleLeftY < 320) {
+        paddleLeftY += 20; // Gerakkan paddle kiri ke bawah
+    }
+});
+
+// Mulai permainan
+startButton.addEventListener
