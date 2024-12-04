@@ -3,13 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pong Game</title>
+  <title>Game Pingpong</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Pong Game - One Player</h1>
-  <canvas id="pongCanvas"></canvas>
-  <button id="startBtn">Start Game</button>  <!-- Tombol untuk memulai permainan -->
-  <script src="script.js"></script>
+  <div id="game-container">
+    <h1>Game Pingpong</h1>
+    <canvas id="gameCanvas" width="800" height="400"></canvas>
+    <div id="game-controls">
+      <button id="startBtn">Start Game</button>
+      <div id="levelDisplay">Level: 1</div>
+      <div id="scoreDisplay">Score: 0</div>
+      <div id="leaderboard">
+        <h2>Leaderboard</h2>
+        <ul id="leaderboardList"></ul>
+      </div>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
 </body>
 </html>
