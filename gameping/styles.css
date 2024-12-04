@@ -1,46 +1,38 @@
 body {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
-    background-color: #000;
+  text-align: center;
+  background-color: #1e1e1e;
+  color: white;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  height: 100vh;
 }
 
-#gameArea {
-    position: relative;
-    width: 100%; /* Menggunakan lebar penuh untuk responsif */
-    height: 400px; /* Tinggi tetap */
-    max-width: 600px; /* Maksimal lebar untuk perangkat besar */
-    border: 2px solid #fff;
-    overflow: hidden;
+h1 {
+  color: #ffffff;
+  font-size: 24px;
+  margin-top: 20px;
 }
 
-#ball {
-    position: absolute;
-    width: 20px;
-    height: 20px;
-    background-color: #fff;
-    border-radius: 50%;
-    top: 190px;
-    left: 290px;
-    display: none; /* Sembunyikan bola saat permainan belum dimulai */
+canvas {
+  border: 2px solid #ffffff;
+  background-color: #000000;
+  margin-top: 20px;
+  display: block;
+  max-width: 100%;
+  height: auto;
 }
 
-.paddle {
-    position: absolute;
-    width: 100px;
-    height: 10px;
-    background-color: #fff;
-    bottom: 10px;
-    left: 50%; /* Posisikan di tengah */
-    transform: translateX(-50%); /* Sesuaikan posisi */
+button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  font-size: 18px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  cursor: pointer;
 }
 
-#startButton {
-    margin-top: 20px;
-    padding: 10px 20px;
-    font-size: 16px;
-    cursor: pointer;
+button:hover {
+  background-color: #45a049;
 }
