@@ -9,6 +9,11 @@ let paddleSpeed = 20; // Kecepatan paddle
 let paddlePosition = gameArea.offsetWidth / 2 - paddle.offsetWidth / 2; // Posisi awal paddle
 let gameInterval; // Variabel untuk menyimpan interval permainan
 
+function startGame() {
+    startButton.style.display = 'none'; // Sembunyikan tombol mulai
+    ball.style.display = 'block'; // Tampilkan bola
+    gameInterval = setInterval(moveBall, 20); // Mulai permainan
+}
 function moveBall() {
     let ballRect = ball.getBoundingClientRect();
     let paddleRect = paddle.getBoundingClientRect();
