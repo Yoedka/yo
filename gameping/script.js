@@ -1,167 +1,172 @@
-const canvas = document.getElementById('pongCanvas');
+// Mendapatkan elemen canvas dan tombol
+const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
-
-// Menyesuaikan ukuran canvas dengan ukuran layar
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-
-// Parameter untuk paddle dan bola
-let paddleWidth = 10, paddleHeight = 100;
-let paddleY = (canvas.height - paddleHeight) / 2;
-let ballRadius = 8;
-let ballX = canvas.width / 2;
-let ballY = canvas.height / 2;
-let ballSpeedX = 4;
-let ballSpeedY = 4;
-const paddleSpeed = 6;
-let gameStarted = false;
-let score = 0;  // Skor pemain
-let level = 1;  // Level permainan
-
-// Tombol Start Game
 const startBtn = document.getElementById('startBtn');
-startBtn.addEventListener('click', startGame);  // Menambahkan event listener ke tombol start
+const levelDisplay = document.getElementById('levelDisplay');
+const scoreDisplay = document.getElementById('scoreDisplay');
+const leaderboardList = document.getElementById('leaderboardList');
 
-// Fungsi untuk menggambar bola
-function drawBall() {
+let paddleWidth = 100, paddleHeight = 10;
+let ballRadius = 10;
+let paddleX;
+let ballX, ballY, ballDX, ballDY;
+let leftPressed = false, rightPressed = false;
+let score = 0;
+let level = 1;
+let gameInterval;
+let leaderboard = [];
+let touchStartX = 0; // Untuk kontrol sentuhan
+
+// Menginisialisasi permainan
+function initGame() {
+  paddleX = (canvas.width - paddleWidth) / 2;
+  ballX = canvas.width / 2;
+  ballY = canvas.height - 30;
+  ballDX = (Math.random() > 0.5 ? 3 : -3); // Kecepatan bola lebih cepat
+  ballDY = -3;
+  score = 0;
+  updateDisplay();
+}
+
+// Mengupdate tampilan skor dan level
+function updateDisplay() {
+  scoreDisplay.innerHTML = `Score: ${score}`;
+  levelDisplay.innerHTML = `Level: ${level}`;
+}
+
+// Menggambar paddle dan bola
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  
+  // Menggambar paddle
+  ctx.beginPath();
+  ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
+  ctx.fillStyle = "#0095DD";
+  ctx.fill();
+  ctx.closePath();
+  
+  // Menggambar bola
   ctx.beginPath();
   ctx.arc(ballX, ballY, ballRadius, 0, Math.PI * 2);
-  ctx.fillStyle = '#ffffff';
+  ctx.fillStyle = "#0095DD";
   ctx.fill();
   ctx.closePath();
-}
 
-// Fungsi untuk menggambar paddle
-function drawPaddle() {
-  ctx.beginPath();
-  ctx.rect(0, paddleY, paddleWidth, paddleHeight); // Paddle hanya ada di sisi kiri
-  ctx.fillStyle = '#ffffff';
-  ctx.fill();
-  ctx.closePath();
-}
+  // Gerakan bola
+  ballX += ballDX;
+  ballY += ballDY;
 
-// Fungsi untuk menggambar garis tengah
-function drawCenterLine() {
-  ctx.beginPath();
-  ctx.setLineDash([5, 5]);
-  ctx.moveTo(canvas.width / 2, 0);
-  ctx.lineTo(canvas.width / 2, canvas.height);
-  ctx.strokeStyle = '#ffffff';
-  ctx.stroke();
-  ctx.closePath();
-}
-
-// Fungsi untuk memperbarui posisi bola
-function updateBall() {
-  ballX += ballSpeedX;
-  ballY += ballSpeedY;
-
-  // Deteksi tabrakan dengan dinding atas/bawah
-  if (ballY - ballRadius <= 0 || ballY + ballRadius >= canvas.height) {
-    ballSpeedY = -ballSpeedY;
+  // Deteksi tabrakan bola dengan dinding
+  if (ballX + ballDX > canvas.width - ballRadius || ballX + ballDX < ballRadius) {
+    ballDX = -ballDX;
+  }
+  if (ballY + ballDY < ballRadius) {
+    ballDY = -ballDY;
+  } else if (ballY + ballDY > canvas.height - ballRadius) {
+    if (ballX > paddleX && ballX < paddleX + paddleWidth) {
+      ballDY = -ballDY;
+      score += 10;
+      if (score % 50 === 0) {
+        level++;
+        clearInterval(gameInterval);
+        gameInterval = setInterval(gameLoop, 1000 / (10 + level)); // Meningkatkan kecepatan
+      }
+    } else {
+      gameOver();
+    }
   }
 
-  // Deteksi tabrakan dengan paddle kiri (hanya satu paddle)
-  if (ballX - ballRadius <= paddleWidth && ballY > paddleY && ballY < paddleY + paddleHeight) {
-    ballSpeedX = -ballSpeedX;
-    increaseScore();  // Menambah skor setiap kali bola mengenai paddle
-  }
-
-  // Deteksi bola keluar dari layar
-  if (ballX - ballRadius <= 0) {
-    ballX = canvas.width / 2;
-    ballY = canvas.height / 2;
-    ballSpeedX = 4;  // Reset kecepatan bola
-    ballSpeedY = 4;
-    level = 1;  // Reset level kembali ke 1
-    paddleWidth = 10;
-    paddleHeight = 100;
-    score = 0;  // Reset skor
+  // Gerakkan paddle
+  if (rightPressed && paddleX < canvas.width - paddleWidth) {
+    paddleX += 7;
+  } else if (leftPressed && paddleX > 0) {
+    paddleX -= 7;
   }
 }
 
-// Fungsi untuk menggambar skor dan level
-function drawScore() {
-  ctx.font = '20px Arial';
-  ctx.fillStyle = '#ffffff';
-  ctx.fillText('Score: ' + score, 10, 30);
-  ctx.fillText('Level: ' + level, canvas.width - 100, 30);
-}
-
-// Fungsi untuk meningkatkan level permainan
-function increaseLevel() {
-  if (score >= 10 * level) {  // Setiap 10 poin, naik ke level berikutnya
-    level++;
-    ballSpeedX += 1;  // Meningkatkan kecepatan bola
-    ballSpeedY += 1;
-    paddleWidth = 10 + level * 2;  // Mengurangi ukuran paddle seiring bertambahnya level
-    paddleHeight = 100 - level * 10;
+// Menangani tombol tekan
+function keyDownHandler(e) {
+  if (e.key == "Right" || e.key == "ArrowRight") {
+    rightPressed = true;
+  } else if (e.key == "Left" || e.key == "ArrowLeft") {
+    leftPressed = true;
   }
 }
 
-// Fungsi untuk meningkatkan skor
-function increaseScore() {
-  score++;
-  increaseLevel();  // Periksa apakah level harus dinaikkan
-}
-
-// Fungsi utama untuk menggambar seluruh elemen permainan
-function draw() {
-  if (!gameStarted) {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.font = '30px Arial';
-    ctx.fillStyle = '#ffffff';
-    ctx.fillText("Click 'Start Game' to begin!", canvas.width / 4, canvas.height / 2);
-    return;
+function keyUpHandler(e) {
+  if (e.key == "Right" || e.key == "ArrowRight") {
+    rightPressed = false;
+  } else if (e.key == "Left" || e.key == "ArrowLeft") {
+    leftPressed = false;
   }
-
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  drawBall();
-  drawPaddle();
-  drawCenterLine();
-  drawScore();
-
-  updateBall();
-
-  requestAnimationFrame(draw);
 }
 
-// Fungsi untuk memulai permainan
+// Menangani kontrol sentuhan untuk paddle
+function touchStartHandler(e) {
+  touchStartX = e.touches[0].clientX;
+}
+
+function touchMoveHandler(e) {
+  let touchEndX = e.touches[0].clientX;
+  let deltaX = touchEndX - touchStartX;
+  if (deltaX > 5 && paddleX < canvas.width - paddleWidth) {
+    paddleX += 10;
+  } else if (deltaX < -5 && paddleX > 0) {
+    paddleX -= 10;
+  }
+  touchStartX = touchEndX; // Update posisi sentuhan untuk swipe selanjutnya
+}
+
+// Menyimpan skor ke leaderboard
+function gameOver() {
+  const playerName = prompt("Game Over! Masukkan nama Anda:");
+  if (playerName) {
+    leaderboard.push({ name: playerName, score: score });
+    leaderboard.sort((a, b) => b.score - a.score);
+    localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
+    updateLeaderboard();
+  }
+  clearInterval(gameInterval);
+  initGame();
+}
+
+// Mengupdate leaderboard
+function updateLeaderboard() {
+  leaderboardList.innerHTML = '';
+  leaderboard.forEach((entry, index) => {
+    const li = document.createElement('li');
+    li.textContent = `${index + 1}. ${entry.name} - ${entry.score}`;
+    leaderboardList.appendChild(li);
+  });
+}
+
+// Memulai permainan
 function startGame() {
-  gameStarted = true;
-  score = 0;  // Reset skor
-  level = 1;  // Reset level
-  ballSpeedX = 4;  // Set kecepatan bola di level pertama
-  ballSpeedY = 4;
-  startBtn.style.display = 'none';  // Sembunyikan tombol setelah permainan dimulai
-  draw();  // Mulai menggambar permainan
+  initGame();
+  gameInterval = setInterval(gameLoop, 1000 / level);
+  startBtn.style.display = 'none';
 }
 
-// Event listener untuk kontrol keyboard (paddle naik/turun)
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'ArrowUp' && paddleY > 0) {
-    paddleY -= paddleSpeed;
-  } else if (e.key === 'ArrowDown' && paddleY + paddleHeight < canvas.height) {
-    paddleY += paddleSpeed;
+// Game loop
+function gameLoop() {
+  draw();
+}
+
+// Mengambil leaderboard dari localStorage
+function loadLeaderboard() {
+  const storedLeaderboard = localStorage.getItem('leaderboard');
+  if (storedLeaderboard) {
+    leaderboard = JSON.parse(storedLeaderboard);
   }
-});
+  updateLeaderboard();
+}
 
-// Event listener untuk kontrol sentuhan layar
-let touchStartY = 0;
-let touchMoveY = 0;
+// Event Listeners
+startBtn.addEventListener('click', startGame);
+document.addEventListener('keydown', keyDownHandler);
+document.addEventListener('keyup', keyUpHandler);
+canvas.addEventListener('touchstart', touchStartHandler);
+canvas.addEventListener('touchmove', touchMoveHandler);
 
-// Ketika sentuhan dimulai
-canvas.addEventListener('touchstart', (e) => {
-  touchStartY = e.touches[0].clientY;  // Menyimpan posisi awal sentuhan
-});
-
-// Ketika jari digeser di layar
-canvas.addEventListener('touchmove', (e) => {
-  touchMoveY = e.touches[0].clientY;  // Mendapatkan posisi sentuhan yang sedang bergerak
-  let touchDeltaY = touchMoveY - touchStartY;
-
-  // Menggerakkan paddle berdasarkan sentuhan
-  if (touchDeltaY < 0 && paddleY > 0) {
-    paddleY -= paddleSpeed; // Geser paddle ke atas
-  } else if (touchDeltaY > 0 && paddleY + paddleHeight < canvas.height
+// Memuat leaderboard ketika pertama kali dibuka
+loadLeaderboard();
