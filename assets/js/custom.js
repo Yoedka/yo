@@ -109,7 +109,7 @@
 			new TypeIt('.passion', {
 				speed: 200,
 		        startDelay: 800,
-		        strings: ['Nub Developer', 'Loli Hunter', 'Loli Protector', 'CopyPaster'],
+		        strings: ['Nub Developer', 'Yudaa', 'YudYudd', 'CopyPaster'],
 		        breakLines: false,
 		        loop: true
 			}).go();
