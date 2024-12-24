@@ -7,7 +7,7 @@ let username = ""; // Untuk menyimpan nama pengguna
 // Memuat soal dari file JSON
 async function loadQuestions() {
     try {
-        const response = await fetch('questions.json');
+        const response = await fetch('games/questions.json');
         questions = await response.json();
         console.log('Soal berhasil dimuat:', questions);
     } catch (error) {
